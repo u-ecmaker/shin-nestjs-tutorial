@@ -1,7 +1,23 @@
 import styles from "@/styles/Home.module.css";
+import { getAllPosts } from "@/utils/api";
+import { PostType } from "@/utils/Types";
 import Head from "next/head";
 
-export default function Home() {
+type Props = {
+  posts: PostType[];
+};
+
+export async function getStaticProps(): Promise<{ props: Props }> {
+  const posts: PostType[] = await getAllPosts();
+
+  return {
+    props: {
+      posts,
+    },
+  };
+}
+
+export default function Home({ posts }: Props) {
   return (
     <>
       <Head>
@@ -14,18 +30,12 @@ export default function Home() {
       <div className={styles.container}>
         <h1> Nest.js Blog </h1>
         <ul className={styles.postList}>
-          <li className={styles.post}>
-            <h2 className={styles.title}>はじめての投稿</h2>
-            <p className={styles.author}>by User</p>
-          </li>
-          <li className={styles.post}>
-            <h2 className={styles.title}>はじめての投稿</h2>
-            <p className={styles.author}>by User</p>
-          </li>
-          <li className={styles.post}>
-            <h2 className={styles.title}>はじめての投稿</h2>
-            <p className={styles.author}>by User</p>
-          </li>
+          {posts.map((post: PostType) => (
+            <li className={styles.post} key={post.id}>
+              <h2 className={styles.title}>{post.title}</h2>
+              <p className={styles.author}>by {post.author}</p>
+            </li>
+          ))}
         </ul>
       </div>
     </>
